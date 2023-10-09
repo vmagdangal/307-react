@@ -117,9 +117,9 @@ app.post('/users', (req, res) => {
 
 // DELETES -----------------------------------------
 app.delete('/users/:id', (req, res) => {
-    console.log(req.params.id)
+    //console.log(req.params.id)
     const index = users['users_list'].indexOf(findUserById(req.params.id))
-    console.log(index)
+    console.log(`removing id ${req.params.id} at index ${index}`)
     users['users_list']
         .splice(index, 1);
     res.status(204).send('Object deleted.');
