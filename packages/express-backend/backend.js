@@ -44,7 +44,7 @@ const findUserByName = (name) => {
         .filter( (user) => user['name'] === name); 
 }
 
-const findUserByNameAndId = (name, job) => { 
+const findUserByNameAndJob = (name, job) => { 
     return users['users_list']
         .filter( (user) => user['name'] === name)
             && ( (user) => user['job'] === job);
@@ -55,12 +55,8 @@ const findUserById = (id) =>
         .find( (user) => user['id'] === id);
 
 const addUser = (user) => {
+    user.id = String(Math.floor(100000 + Math.random() * 900000)); //looked up how to generate a 6-digit integer
     users['users_list'].push(user);
-    return user;
-}
-
-const deleteUser = (user) => {
-    users['users_list'].delete(user);
     return user;
 }
 
@@ -85,7 +81,7 @@ app.get('/users', (req, res) => { //get users with name and job
     const name = req.query.name;
     const job = req.query.job;
     if (name != undefined && job != undefined){
-        let result = findUserByNameAndId(name, job);
+        let result = findUserByNameAndJob(name, job);
         result = {users_list: result};
         res.send(result);
     }
@@ -113,15 +109,20 @@ app.get('/users', (req, res) => {
 // POSTS -----------------------------------------
 app.post('/users', (req, res) => {
     const userToAdd = req.body;
-    addUser(userToAdd);
-    res.send();
+    if (userToAdd != undefined) {
+        addUser(userToAdd);
+        res.status(201).send('Object inserted.');
+    }
 });
 
 // DELETES -----------------------------------------
-app.delete('/users', (req, res) => {
-    const userToDelete = req.body;
-    deleteUser(userToDelete);
-    res.send();
+app.delete('/users/:id', (req, res) => {
+    console.log(req.params.id)
+    const index = users['users_list'].indexOf(findUserById(req.params.id))
+    console.log(index)
+    users['users_list']
+        .splice(index, 1);
+    res.status(204).send('Object deleted.');
 });
 
 // LISTEN
